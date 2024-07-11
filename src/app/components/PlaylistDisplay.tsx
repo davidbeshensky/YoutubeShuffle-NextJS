@@ -18,7 +18,7 @@ function PlaylistDisplay() {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3000/api/youtube');
+            const response = await fetch('https://youtube-shuffle-next-js.vercel.app/api/youtube');
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`)
             }
