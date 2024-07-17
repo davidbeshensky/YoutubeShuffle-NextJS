@@ -140,7 +140,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
           Start Roll Sequence
         </button>
       )}
-      {showButton && (
+      {playStarted && (
         <div className="relative bg-slate-600 p-4 rounded shadow-lg w-80">
           <ul className="list-none">
             {playedSongs.map((item, index) => (
