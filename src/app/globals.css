@@ -26,6 +26,25 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+.clerk-sign-in-button button {
+  background-color: #2563eb; /* blue-500 */
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: transform 300ms ease-in-out, background-color 300ms ease-in-out;
+}
+
+.clerk-sign-in-button button:hover {
+  background-color: #1d4ed8; /* blue-600 */
+  transform: scale(1.05);
+}
+
+.clerk-sign-in-button button:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Tailwind's ring-2 ring-blue-300 */
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
