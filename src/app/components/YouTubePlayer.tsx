@@ -44,8 +44,8 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
 
   const initializePlayer = () => {
     playerRef.current = new YT.Player("youtube-player", {
-      height: "360",
-      width: "640",
+      height: "100%",
+      width: "100%",
       videoId: playlistItems[videoIndex].videoId,
       events: {
         onReady: onPlayerReady,
@@ -56,7 +56,12 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
   };
 
   useEffect(() => {
-    if (playStarted && isApiLoaded && playlistItems.length > 0 && !playerRef.current) {
+    if (
+      playStarted &&
+      isApiLoaded &&
+      playlistItems.length > 0 &&
+      !playerRef.current
+    ) {
       initializePlayer();
       setPlayedSongs([playlistItems[videoIndex]]); // Add the first song initially
     }
@@ -65,6 +70,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
   const onPlayerReady = (event: any) => {
     setPlayerReady(true);
     event.target.playVideo();
+    updatePlayerSize();
   };
 
   useEffect(() => {
@@ -77,19 +83,20 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
   const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
     if (event.data === YT.PlayerState.ENDED) {
       setVideoIndex((prevIndex) => {
-        const nextIndex = prevIndex + 1 < playlistItems.length ? prevIndex + 1 : 0;
-        console.log('New videoIndex:', nextIndex);
+        const nextIndex =
+          prevIndex + 1 < playlistItems.length ? prevIndex + 1 : 0;
+        console.log("New videoIndex:", nextIndex);
         return nextIndex;
       });
     }
   };
 
-
   const onPlayerError = (event: YT.OnErrorEvent) => {
     console.log("Error playing video", event.data);
     setVideoIndex((prevIndex) => {
-      const nextIndex = prevIndex + 1 < playlistItems.length ? prevIndex + 1 : 0;
-      console.log('New videoIndex on error:', nextIndex);
+      const nextIndex =
+        prevIndex + 1 < playlistItems.length ? prevIndex + 1 : 0;
+      console.log("New videoIndex on error:", nextIndex);
       return nextIndex;
     });
   };
@@ -127,6 +134,22 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
     setIsListVisible(!isListVisible);
   };
 
+  const updatePlayerSize = () => {
+    if (playerRef.current) {
+        const aspectRatio = 16/9;
+        const width = window.innerWidth;
+        const height = window.innerWidth / aspectRatio;
+        playerRef.current.setSize(width, height);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", updatePlayerSize);
+    return () => {
+        window.removeEventListener("resize", updatePlayerSize);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       {!playStarted && !showButton && (
@@ -134,7 +157,11 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
           <div className="loader"></div>
         </div>
       )}
-      {playStarted && <div id="youtube-player" className="mb-4"></div>}
+      {playStarted && (
+        <div className="flex items-center justify-center py-12``">
+          <div id="youtube-player"></div>
+        </div>
+      )}
       {showButton && (
         <button
           onClick={startVideoSequence}
@@ -144,7 +171,7 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
         </button>
       )}
       {playStarted && (
-        <div className="relative bg-slate-600 px-4 pt-4 pb-2 rounded shadow-lg w-full">
+        <div className="relative bg-slate-600 px-4 pt-2 pb-2 rounded shadow-lg w-3/4 max-w-lg">
           {isListVisible ? (
             <ul className="list-none">
               {playedSongs.map((item, index) => (
@@ -166,7 +193,6 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
           </div>
         </div>
       )}
-
       <style jsx>{`
         .loader {
           border: 8px solid #f3f3f3;
