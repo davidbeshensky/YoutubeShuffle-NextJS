@@ -126,28 +126,54 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
+      {!playStarted && !showButton && (
+        <div className="flex items-center justify-center absolute inset-0">
+          <div className="loader"></div>
+        </div>
+      )}
       {playStarted && <div id="youtube-player" className="mb-4"></div>}
       {showButton && (
         <button
           onClick={startVideoSequence}
-          className="mb-4 bg-slate-600 text-white px4 py-2 rounded"
+          className="mb-4 bg-slate-600 text-white px-4 py-2 rounded"
         >
           Start Roll Sequence
         </button>
       )}
-      <div className="relative bg-slate-600 p-4 rounded shadow-lg w-80">
-        <ul className="list-none">
-          {playedSongs.map((item, index) => (
-            <li key={index}>{item.title}</li>
-          ))}
-        </ul>
-        <button
-          onClick={copyToClipboard}
-          className="absolute top-2 right-2 text-white"
-        >
-          <FiCopy size={20} />
-        </button>
-      </div>
+      {showButton && (
+        <div className="relative bg-slate-600 p-4 rounded shadow-lg w-80">
+          <ul className="list-none">
+            {playedSongs.map((item, index) => (
+              <li key={index}>{item.title}</li>
+            ))}
+          </ul>
+          <button
+            onClick={copyToClipboard}
+            className="absolute top-2 right-2 text-white"
+          >
+            <FiCopy size={20} />
+          </button>
+        </div>
+      )}
+
+      <style jsx>{`
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+      `}</style>
     </div>
   );
 };
