@@ -31,7 +31,9 @@ function PlaylistDisplay() {
         }
         const data = await response.json();
         const filteredItems = filterVideos(data.playlistItems);
+
         shuffleArray(filteredItems);
+
         setPlaylistItems(filteredItems);
         setShuffleFinished(true);
         success = true;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FiCopy } from "react-icons/fi";
 import { MdRemove } from "react-icons/md";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface PlaylistItem {
   title: string;
@@ -136,17 +137,17 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
 
   const updatePlayerSize = () => {
     if (playerRef.current) {
-        const aspectRatio = 16/9;
-        const width = window.innerWidth;
-        const height = window.innerWidth / aspectRatio;
-        playerRef.current.setSize(width, height);
+      const aspectRatio = 16 / 9;
+      const width = window.innerWidth;
+      const height = window.innerWidth / aspectRatio;
+      playerRef.current.setSize(width, height);
     }
   };
 
   useEffect(() => {
     window.addEventListener("resize", updatePlayerSize);
     return () => {
-        window.removeEventListener("resize", updatePlayerSize);
+      window.removeEventListener("resize", updatePlayerSize);
     };
   }, []);
 
@@ -154,60 +155,124 @@ const YouTubePlayer: React.FC<YouTubePlayerProps> = ({ playlistItems }) => {
     <div className="flex flex-col items-center justify-center min-h-screen">
       {!playStarted && !showButton && (
         <div className="flex items-center justify-center absolute inset-0">
-          <div className="loader"></div>
+          <div className="loader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
       )}
       {playStarted && (
-        <div className="flex items-center justify-center py-12``">
+        <div className="flex items-center justify-center py-12">
           <div id="youtube-player"></div>
         </div>
       )}
       {showButton && (
-        <button
+        <motion.button
           onClick={startVideoSequence}
           className="mb-4 bg-slate-600 text-white px-4 py-2 rounded"
+          whileHover={{ scale: 1.05, backgroundColor: "#475569" }}
+          whileTap={{
+            scale: [0.9, 1.2, 1],
+            backgroundColor: ["#334155", "#475569", "#334155"],
+            transition: { duration: 0.5 },
+          }}
         >
           Start Roll Sequence
-        </button>
+        </motion.button>
       )}
       {playStarted && (
         <div className="relative bg-slate-600 px-4 pt-2 pb-2 rounded shadow-lg w-3/4 max-w-lg">
-          {isListVisible ? (
-            <ul className="list-none">
-              {playedSongs.map((item, index) => (
-                <li key={index}>{item.title}</li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-white">
-              {playedSongs[videoIndex]?.title || "No song playing"}
-            </div>
-          )}
+          <AnimatePresence>
+            {isListVisible ? (
+              <motion.ul
+                className="list-none pt-5"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {playedSongs.map((item, index) => (
+                  <li key={index}>{item.title}</li>
+                ))}
+              </motion.ul>
+            ) : (
+              <motion.div
+                className="text-white"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {playedSongs[videoIndex]?.title || "No song playing"}
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="absolute top-0 right-0 pt-2 pr-2 space-x-2">
-            <button onClick={copyToClipboard} className="text-white">
+            <motion.button
+              onClick={copyToClipboard}
+              className="text-white"
+              whileHover={{ scale: 1.1, color: "#cbd5e1" }}
+              whileTap={{ scale: 0.9, color: "#94a3b8" }}
+            >
               <FiCopy size={20} />
-            </button>
-            <button onClick={toggleListVisibility} className="text-white">
+            </motion.button>
+            <motion.button
+              onClick={toggleListVisibility}
+              className="text-white"
+              whileHover={{ scale: 1.1, color: "#cbd5e1" }}
+              whileTap={{ scale: 0.9, color: "#94a3b8" }}
+            >
               <MdRemove size={20} />
-            </button>
+            </motion.button>
           </div>
         </div>
       )}
       <style jsx>{`
         .loader {
-          border: 8px solid #f3f3f3;
-          border-top: 8px solid #3498db;
-          border-radius: 50%;
-          width: 60px;
-          height: 60px;
-          animation: spin 2s linear infinite;
+          display: inline-block;
+          position: relative;
+          width: 80px;
+          height: 80px;
         }
-        @keyframes spin {
+        .loader div {
+          position: absolute;
+          top: 33px;
+          width: 13px;
+          height: 13px;
+          border-radius: 50%;
+          background: #3498db;
+          animation: loader 1.2s linear infinite;
+        }
+        .loader div:nth-child(1) {
+          left: 8px;
+          animation-delay: -0.24s;
+        }
+        .loader div:nth-child(2) {
+          left: 24px;
+          animation-delay: -0.12s;
+        }
+        .loader div:nth-child(3) {
+          left: 40px;
+          animation-delay: 0;
+        }
+        .loader div:nth-child(4) {
+          left: 56px;
+          animation-delay: -0.12s;
+        }
+        .loader div:nth-child(5) {
+          left: 72px;
+          animation-delay: -0.24s;
+        }
+        @keyframes loader {
           0% {
-            transform: rotate(0deg);
+            transform: scale(0);
           }
           100% {
-            transform: rotate(360deg);
+            transform: scale(1);
+            opacity: 0;
           }
         }
       `}</style>
